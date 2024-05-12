@@ -7,17 +7,17 @@ export class Merchant {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  name: string;
+  // @Column()
+  // name: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created: Date;
+  // @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  // created: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updated: Date;
+  // @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  // updated: Date;
 
-  @Column({ type: 'simple-array', default: ['active'] })
-  status: string[];
+  // @Column({ type: 'simple-array', default: ['active'] })
+  // status: string[];
 
   constructor() {
     if (!this.id) {
