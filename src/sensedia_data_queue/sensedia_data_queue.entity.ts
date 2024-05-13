@@ -1,18 +1,18 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { Role } from './role.entity';
-import { Merchant } from './merchant.entity';
+import { Merchant } from '../merchant/merchant.entity';
 
-@Entity({name: 'users'})
-export class User {
+
+@Entity({name: 'sensedia_data_queues'})
+export class Sensedia_Data_Queue {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({unique:true})
-  username: string;
+  @Column({type: 'text'})
+  payload: string;
 
-  @Column()
-  password: string;
+  //@Column()
+  //reference_id: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
@@ -22,10 +22,6 @@ export class User {
 
   @Column({ type: 'simple-array', default: ['active'] })
   status: string[];
-
-  @OneToOne(() => Role)
-  @JoinColumn()
-  role: Role;
 
   @OneToOne(() => Merchant)
   @JoinColumn()

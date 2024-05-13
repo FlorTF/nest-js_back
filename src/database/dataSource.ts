@@ -6,7 +6,7 @@ export const connectionSource = new DataSource({
   port: 5432,
   username: 'postgres',
   password: 'toor',
-  database: 'db',
+  database: 'dboard',
   logging: true,
   synchronize: false,
   entities: ['src/**/*.entity.ts'],

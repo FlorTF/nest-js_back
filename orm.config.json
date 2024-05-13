@@ -4,7 +4,7 @@
     "port": 5432,
     "username": "postgres",
     "password": "toor",
-    "database": "db",
+    "database": "dboard",
     "entities": ["src/**/*.entity.ts"],
     "synchronize": false,
     "migrationsTableName": "migrations",
