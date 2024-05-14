@@ -7,6 +7,9 @@ export class ApiController {
 
   @Post('consume-and-save')
   async consumeAndSaveData(): Promise<void> {
-    await this.apiService.consumeAndSaveData();
+  
+    await this.apiService.consumeAndSaveData([48, 49]);
   }
+
+
 }

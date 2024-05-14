@@ -1,56 +1,81 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sensedia_Data_Queue } from '../sensedia_data_queue/sensedia_data_queue.entity';
 
-
-
 @Injectable()
 export class ApiService {
   constructor(
     @InjectRepository(Sensedia_Data_Queue)
-    private readonly sensediaDataQueueRepository: Repository<Sensedia_Data_Queue>,
+    private readonly Sensedia_Data_QueueRepository: Repository<Sensedia_Data_Queue>,
   ) {}
 
-  async consumeAndSaveData(): Promise<void> {
+  async consumeAndSaveData(apiIds: number[]): Promise<void> {
     try {
       const headers = {
         'Content-Type': 'application/json',
         'Sensedia-Auth': '126be69a-5c0f-3aba-a912-bd6a4407fd4b',
       };
-      const body = {
-        apiId: 49,
-      };
 
-      const response = await axios.post(
-        'https://manager-gbc.sensedia.com/api-metrics/api/v3/trace/calls',
-        body,
-        { headers },
-      );
-      
-      const responseData = response.data;
-      /*
+      for (const apiId of apiIds) {
+        const body = {
+          apiId: apiId,
+        };
+
+        const response = await axios.post(
+          'https://manager-gbc.sensedia.com/api-metrics/api/v3/trace/calls',
+          body,
+          { headers },
+        );
+
+        const responseData = response.data;
+        
+        /*
+      responseData: 
       {"calls": [{},{},{},...,{}],
        "callsSize": 1000,
       }
       */
-      console.log(responseData.calls)
+        //console.log(responseData.calls)
 
-      // Extraer el valor de la clave 'id' del objeto JSON
-      //const referenceId = responseData.calls;
-      
-      
+        if ('calls' in responseData) {
+          await Promise.all(
+            responseData.calls.map(async (call: any) => {
+              const referenceId = call.id;
+              const payload = JSON.stringify(call);
 
+              // Verificar si el referenceId ya existe en la base de datos
+              const existingData =
+                await this.Sensedia_Data_QueueRepository.findOne({
+                  where: { reference_id: referenceId },
+                });
 
-      // Crear una nueva instancia de SensediaDataQueue con el valor de referenceId
-    //   const newData = this.sensediaDataQueueRepository.create({
-    //     payload: JSON.stringify(responseData),
-    //     //reference_id: referenceId, // Asignar el valor de referenceId al campo reference_id
-    //   });
+              // Si ya existe un registro con el mismo referenceId, lanzar una excepción de conflicto
+              // if (existingData) {
+              //   throw new ConflictException(
+              //     'reference_id already exists',
+              //   );
+              // }else{
+              //   const newCall = this.Sensedia_Data_QueueRepository.create({
+              //     payload: payload,
+              //     reference_id: referenceId,
+              //   });
+              //   await this.Sensedia_Data_QueueRepository.save(newCall);
+              // }
 
-      // Guardar los datos en la base de datos
-      //await this.sensediaDataQueueRepository.save(newData);
+              // Si no existe un registro con el mismo reference_id, entonces guardarlo
+              if (!existingData) {
+                const newCall = this.Sensedia_Data_QueueRepository.create({
+                  payload: payload,
+                  reference_id: referenceId,
+                });
+                await this.Sensedia_Data_QueueRepository.save(newCall);
+              }
+            }),
+          );
+        }
+      }
     } catch (error) {
       console.error('Error consuming API or saving data:', error);
       throw error;

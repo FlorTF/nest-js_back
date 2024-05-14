@@ -9,10 +9,10 @@ export class Sensedia_Data_Queue {
   id: string;
 
   @Column({type: 'text'})
-  payload: string;
+  payload: string | null;
 
-  //@Column()
-  //reference_id: string;
+  @Column({nullable: true})
+  reference_id: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
