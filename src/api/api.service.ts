@@ -37,7 +37,7 @@ export class ApiService {
        "callsSize": 1000,
       }
       */
-        //console.log(responseData.calls)
+      console.log(responseData.calls)
 
         if ('calls' in responseData) {
           await Promise.all(
@@ -50,19 +50,6 @@ export class ApiService {
                 await this.Sensedia_Data_QueueRepository.findOne({
                   where: { reference_id: referenceId },
                 });
-
-              // Si ya existe un registro con el mismo referenceId, lanzar una excepción de conflicto
-              // if (existingData) {
-              //   throw new ConflictException(
-              //     'reference_id already exists',
-              //   );
-              // }else{
-              //   const newCall = this.Sensedia_Data_QueueRepository.create({
-              //     payload: payload,
-              //     reference_id: referenceId,
-              //   });
-              //   await this.Sensedia_Data_QueueRepository.save(newCall);
-              // }
 
               // Si no existe un registro con el mismo reference_id, entonces guardarlo
               if (!existingData) {
